@@ -67,16 +67,16 @@ else
 	exit 1
 fi
 
-while getopts ":d:h:p:" opt; do
+while getopts ":d:h:p:" opt ${@:2}; do
 	case $opt in
 		d)
-			$DEVICE=$OPTARG
+			DEVICE=$OPTARG
 		;;
 		h)
-			$HOST=$OPTARG
+			HOST=$OPTARG
 		;;
 		p)
-			$HOST=$OPTARG
+			PORT=$OPTARG
 		;;
 		\?)
 			echo "Unknown argument -$OPTARG" >&2
