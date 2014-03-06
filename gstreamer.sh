@@ -6,11 +6,6 @@ PORT=
 
 EXEC=
 
-usage_base() {
-	echo -e "$0 [server|client] [-d <device>] [-h <host-ip>] [-p <port>]"
-	exit 1
-}
-
 launch() {
 	if [ "$EXEC" == "server" ]; then
 		server_launch
@@ -19,9 +14,31 @@ launch() {
 	fi
 }
 
+usage() {
+	if [ -z "$EXEC" ]; then
+		usage_base
+	elif [ "$EXEC" == "server" ]; then
+		usage_server
+	else
+		usage_client
+	fi
+}
+
+usage_base() {
+	echo -e "$0 [server|client] [-d <device>] [-h <host-ip>] [-p <port>]"
+}
+
+usage_server() {
+	echo -e "$0 $EXEC [-p <port>]"
+}
+
+usage_client() {
+	echo -e "$0 client [-d <device>] [-h <host-ip>] [-p <port>]"
+}
+
 client_launch() {
 	gst-launch 						\
-	v4l2src device=$DEVICE 				\
+	v4l2src device=$DEVICE 					\
 	! 'video/x-raw-yuv,width=640,height=480' 		\
 	!  x264enc pass=qual quantizer=20 tune=zerolatency 	\
 	! rtph264pay						\
@@ -37,15 +54,17 @@ server_launch() {
 	! xvimagesink sync=false
 }
 
-if [ $# -lt 1]; then
+if [ $# -lt 1 ]; then
 	usage_base
+	exit 1
 fi
 
 if [ "$1" == "server" ] || [ "$1" == "client" ]; then
-	$EXEC=$1
+	EXEC=$1
 else
 	echo "Unknown option $1"
 	usage_base
+	exit 1
 fi
 
 while getopts ":d:h:p:" opt; do
@@ -62,10 +81,12 @@ while getopts ":d:h:p:" opt; do
 		\?)
 			echo "Unknown argument -$OPTARG" >&2
 			usage
+			exit 1;
 		;;
 		:)
 			echo "-$OPTARG requires an argument!" >&2
 			usage
+			exit 1;
 		;;
 	esac
 done
@@ -85,4 +106,7 @@ if [ -z "$PORT" ]; then
 	PORT=30000
 fi
 
-launch
+
+if [ "$EXEC" ]; then
+	launch
+fi
