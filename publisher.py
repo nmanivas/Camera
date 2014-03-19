@@ -11,18 +11,44 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import time
 
+height=str(640)
+width=str(480)
+capture=cv.CaptureFromCAM(0)
+
+def callback(data):
+    global height
+    global width
+    global capture
+    string=str(data.data)
+    b=string.split(' ')
+    height=str(b[0])
+    width=str(b[1])
+    cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_WIDTH,int(width))
+    cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_HEIGHT,int(height))
+    #global.fps=str(b[2])
+    #print height+'\n'
+    print str(height)
+    print str(width)
+    
+    
+
+
 
 def talker():
     #cv.NamedWindow("")
-    capture =cv.CaptureFromCAM(1)
-    cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_WIDTH,100)
-    cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_HEIGHT,50)
+    global height
+    global width
+    #capture =cv.CaptureFromCAM(0)
+    cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_WIDTH,int(width))
+    cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_HEIGHT,int(height))
     #cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FPS,2)
     #rate=cv.GetCaptureProperty(capture,cv.CV_CAP_PROP_FPS)
     #print rate
     bridge=CvBridge()
     pub = rospy.Publisher('chatter', Image)
     rospy.init_node('talker', anonymous=True)
+    
+    rospy.Subscriber("config", String, callback)
     r = rospy.Rate(30) # 10hz
     frames=0
     start_time=0
@@ -39,7 +65,7 @@ def talker():
 		curtime=time.time()
 		diff=curtime-start_time
 		fps=frames/diff
-		print fps
+		#print fps
         #ret,frame=capture.read()
         #image=np.asarray(frame[:,:])
 	#a=image.shape
