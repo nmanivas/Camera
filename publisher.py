@@ -11,33 +11,57 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import time
 
+
 height=str(640)
 width=str(480)
+fps=str(30)
+cam0=str(1)
+cam1=str(0)
+cam2=str(0)
+cam3=str(0)
+cam4=str(0)
 capture=cv.CaptureFromCAM(0)
 
+
 def callback(data):
+    print "Call Back Reached"
     global height
     global width
     global capture
+    global fps
+    global cam0
+    global cam1
+    global cam2
+    global cam3
+    global cam4
     string=str(data.data)
-    b=string.split(' ')
-    height=str(b[0])
-    width=str(b[1])
+    b=string.split(',')
+    height=str(b[6])
+    width=str(b[7])
+    cam0=str(b[0])
+    cam1=str(b[1])
+    cam2=str(b[2])
+    cam3=str(b[3])
+    cam4=str(b[4])
+    fps=str(b[5])
+    if cam0==str(1):
+        capture=cv.CaptureFromCAM(0)
+    if cam1==str(1):
+        capture=cv.CaptureFromCAM(1)
+    if cam2==str(1):
+        capture=cv.CaptureFromCAM(2)
+    if cam3==str(1):
+        capture=cv.CaptureFromCAM(3)
+    if cam4==str(1):
+        capture=cv.CaptureFromCAM(4)
     cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_WIDTH,int(width))
     cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_HEIGHT,int(height))
-    #global.fps=str(b[2])
-    #print height+'\n'
-    print str(height)
-    print str(width)
-    
-    
-
-
-
+        
 def talker():
     #cv.NamedWindow("")
     global height
     global width
+    global fps
     #capture =cv.CaptureFromCAM(0)
     cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_WIDTH,int(width))
     cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_HEIGHT,int(height))
@@ -49,12 +73,13 @@ def talker():
     rospy.init_node('talker', anonymous=True)
     
     rospy.Subscriber("config", String, callback)
-    r = rospy.Rate(30) # 10hz
+    #r = rospy.Rate(30) # 10hz
     frames=0
     start_time=0
-    check=0 
+    check=0
     while not rospy.is_shutdown():
         #str = "hello world %s"%rospy.get_time()
+        r = rospy.Rate(int(fps))
         frame=cv.QueryFrame(capture)
 	if check==0:
 		check=1
@@ -65,14 +90,14 @@ def talker():
 		curtime=time.time()
 		diff=curtime-start_time
 		fps=frames/diff
-		#print fps
+		print fps
         #ret,frame=capture.read()
         #image=np.asarray(frame[:,:])
 	#a=image.shape
 	#print a
         #rospy.loginfo(st)
+	r.sleep()
         pub.publish(bridge.cv_to_imgmsg(frame, "bgr8"))
-        #r.sleep()
 
 if __name__ == '__main__':
     try:
