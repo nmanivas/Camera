@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import roslib
-roslib.load_manifest('tutorialROSOpenCV')
+roslib.load_manifest('cam_test')
 import sys
 import rospy
 import cv
@@ -21,6 +21,7 @@ cam2=str(0)
 cam3=str(0)
 cam4=str(0)
 capture=cv.CaptureFromCAM(0)
+check_fps_set=0
 
 
 def callback(data):
@@ -34,6 +35,7 @@ def callback(data):
     global cam2
     global cam3
     global cam4
+    global check_fps_set
     string=str(data.data)
     b=string.split(',')
     height=str(b[6])
@@ -54,6 +56,7 @@ def callback(data):
         capture=cv.CaptureFromCAM(3)
     if cam4==str(1):
         capture=cv.CaptureFromCAM(4)
+    check_fps_set=1
     cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_WIDTH,int(width))
     cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_HEIGHT,int(height))
         
@@ -62,6 +65,7 @@ def talker():
     global height
     global width
     global fps
+    global check_fps_set
     #capture =cv.CaptureFromCAM(0)
     cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_WIDTH,int(width))
     cv.SetCaptureProperty(capture,cv.CV_CAP_PROP_FRAME_HEIGHT,int(height))
@@ -73,18 +77,20 @@ def talker():
     rospy.init_node('talker', anonymous=True)
     
     rospy.Subscriber("config", String, callback)
-    #r = rospy.Rate(30) # 10hz
+    r = rospy.Rate(int(fps)) # 10hz
     frames=0
     start_time=0
     check=0
     while not rospy.is_shutdown():
         #str = "hello world %s"%rospy.get_time()
-        r = rospy.Rate(int(fps))
         frame=cv.QueryFrame(capture)
 	if check==0:
 		check=1
 		start_time=time.time()
-
+        if check_fps_set==1:
+        	r = rospy.Rate(int(fps))
+        	print "fps: " + fps
+        	check_fps_set=0
 	frames=frames+1
 	if frames%10==0:
 		curtime=time.time()
