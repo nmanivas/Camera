@@ -5,3 +5,19 @@ http://wiki.ros.org/hydro/Installation/Ubuntu
 
 OpenCV Installation:
 https://help.ubuntu.com/community/OpenCV
+
+
+Running the camera node and server:
+
+1. Run roscore:
+    sudo bash
+    rosrun roscore
+
+2. Run the camera node:
+    rosrun usb_cam_test publisher1.py
+
+3. Run the mjpeg server:
+    rosrun mjpeg_server mjpeg_server
+    
+4. Run the communication node:
+    rosrun ros_project (?.cpp)
