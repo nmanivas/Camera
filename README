@@ -37,7 +37,10 @@ If in doubt look at : http://www.youtube.com/watch?v=A4urP-GlSwg
 
 Setting up the PTZ control:
 
-// by Anas once he remembers the magic he did!!
-
-
-
+1. In catkin_ws/src run "git clone https://github.com/clearpathrobotics/axis_camera.git axis_camera"
+2. Add axis_camera to ROS_PACKAGE_PATH.
+3. Run "export ROS_NAMESPACE=axis".
+4. Make the IP address, username and password changes to the source files in axis_camera.
+5. Run "sudo apt-get install ros-hydro-camera-info-manager-py".
+6. Go to catkin_ws and run "catkin_make".
+7. axis_camera is ready to be used.
