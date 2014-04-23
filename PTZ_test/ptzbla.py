@@ -141,7 +141,7 @@ def talker():
         if cam==str(5):
             #print "inside here"
             #sub=rospy.Subscriber('/image_raw/compressed', CompressedImage,callback1,queue_size=1)
-            #print frame
+            print frame
         if check==0:
             check=1
             start_time=time.time()
