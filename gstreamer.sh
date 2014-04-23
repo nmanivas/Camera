@@ -3,7 +3,7 @@
 DEVICE=
 HOST=
 PORT=
-
+SRC=udpsrc
 EXEC=
 
 launch() {
@@ -50,7 +50,7 @@ client_launch() {
 server_launch() {
 	echo "using port: $PORT"
 	gst-launch 				\
-	udpsrc port=$PORT 			\
+	$SRC port=$PORT 			\
 	! "application/x-rtp, media=video, clock-rate=90000, encoding-type=H264, payload=96" 	\
 	! rtph264depay 				\
 	! "video/x-h264,width=640,height=480,framerate=30/1"	\
@@ -73,7 +73,7 @@ else
 	exit 1
 fi
 
-while getopts ":d:h:p:" opt ${@:2}; do
+while getopts ":d:h:p:s:" opt ${@:2}; do
 	case $opt in
 		d)
 			DEVICE=$OPTARG
@@ -84,6 +84,9 @@ while getopts ":d:h:p:" opt ${@:2}; do
 		p)
 			PORT=$OPTARG
 		;;
+		s)	SRC=$OPTARG
+		;;
+
 		\?)
 			echo "Unknown argument -$OPTARG" >&2
 			usage
