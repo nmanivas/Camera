@@ -44,3 +44,10 @@ Setting up the PTZ control:
 5. Run "sudo apt-get install ros-hydro-camera-info-manager-py".
 6. Go to catkin_ws and run "catkin_make".
 7. axis_camera is ready to be used.
+
+
+Axis Camera Limits:
+Pan: 0 to 359
+Tilt: (0 to -180) or (360 to 180)
+Zoom: 0 to 10000
+
