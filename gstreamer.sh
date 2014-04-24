@@ -40,7 +40,7 @@ client_launch() {
 	gst-launch 						\
 	v4l2src device=$DEVICE do-timestamp=true		\
 	! videorate						\
-	! 'video/x-raw-yuv,width=640,height=480'	 	\
+	! 'video/x-raw-yuv,width=640,height=480,framerate=30/1'	\
 	! jpegenc						\
 	! udpsink host=$HOST port=$PORT
 }
@@ -50,6 +50,14 @@ server_launch() {
 	gst-launch 				\
 	$SRC port=$PORT 			\
 	! jpegdec 				\
+	! tee name=muxtee			\
+	! queue2				\
+	! videorate caps='video/x-raw-yuv,framerate=30/1'	\
+	! ffmpegcolorspace			\
+	! jpegenc				\
+	! avimux				\
+	! filesink location=test.avi muxtee.	\
+	! queue					\
 	! xvimagesink sync=false
 }
 
