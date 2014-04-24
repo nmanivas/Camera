@@ -39,11 +39,9 @@ usage_client() {
 client_launch() {
 	gst-launch 						\
 	v4l2src device=$DEVICE do-timestamp=true		\
-	! 'video/x-raw-yuv,width=640,height=480' 		\
-	! ffmpegcolorspace					\
-	! x264enc pass=qual quantizer=20 tune=zerolatency byte-stream=true 	\
-	! h264parse						\
-	! rtph264pay						\
+	! videorate						\
+	! 'video/x-raw-yuv,width=640,height=480'	 	\
+	! jpegenc						\
 	! udpsink host=$HOST port=$PORT
 }
 
@@ -51,12 +49,7 @@ server_launch() {
 	echo "using port: $PORT"
 	gst-launch 				\
 	$SRC port=$PORT 			\
-	! "application/x-rtp, media=video, clock-rate=90000, encoding-type=H264, payload=96" 	\
-	! rtph264depay 				\
-	! "video/x-h264,width=640,height=480,framerate=30/1"	\
-	! ffdec_h264 				\
-	! ffmpegcolorspace			\
-	! videorate				\
+	! jpegdec 				\
 	! xvimagesink sync=false
 }
 
