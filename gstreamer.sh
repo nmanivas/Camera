@@ -3,7 +3,7 @@
 DEVICE=
 HOST=
 PORT=
-
+SRC=udpsrc
 EXEC=
 
 launch() {
@@ -38,19 +38,26 @@ usage_client() {
 
 client_launch() {
 	gst-launch 						\
-	v4l2src device=$DEVICE 					\
-	! 'video/x-raw-yuv,width=640,height=480' 		\
-	!  x264enc pass=qual quantizer=20 tune=zerolatency 	\
-	! rtph264pay						\
+	v4l2src device=$DEVICE do-timestamp=true		\
+	! videorate						\
+	! 'video/x-raw-yuv,width=640,height=480,framerate=30/1'	\
+	! jpegenc						\
 	! udpsink host=$HOST port=$PORT
 }
 
 server_launch() {
+	echo "using port: $PORT"
 	gst-launch 				\
-	udpsrc port=$PORT 			\
-	! "application/x-rtp, payload=127" 	\
-	! rtph264depay 				\
-	! ffdec_h264 				\
+	$SRC port=$PORT 			\
+	! jpegdec 				\
+	! tee name=muxtee			\
+	! queue2				\
+	! videorate caps='video/x-raw-yuv,framerate=30/1'	\
+	! ffmpegcolorspace			\
+	! jpegenc				\
+	! avimux				\
+	! filesink location=test.avi muxtee.	\
+	! queue					\
 	! xvimagesink sync=false
 }
 
@@ -67,7 +74,7 @@ else
 	exit 1
 fi
 
-while getopts ":d:h:p:" opt ${@:2}; do
+while getopts ":d:h:p:s:" opt ${@:2}; do
 	case $opt in
 		d)
 			DEVICE=$OPTARG
@@ -78,6 +85,9 @@ while getopts ":d:h:p:" opt ${@:2}; do
 		p)
 			PORT=$OPTARG
 		;;
+		s)	SRC=$OPTARG
+		;;
+
 		\?)
 			echo "Unknown argument -$OPTARG" >&2
 			usage
