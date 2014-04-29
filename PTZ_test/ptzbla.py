@@ -21,6 +21,7 @@ capture=cv.CaptureFromCAM(0)
 capture1=None
 sub=None
 frame=None
+prev_cam='0'
 check_fps_set=0
 
 def callback1(ros_data):
@@ -29,11 +30,13 @@ def callback1(ros_data):
     #print 'received image data of type:%s'% ros_data.format
     global sub
     global frame
-    print "here"
-    np_arr = np.fromstring(ros_data.data, np.uint8)
-    image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-    frame=cv.fromarray(image_np)
-    #sub.unregister()
+    global cam
+    if cam==str(2):
+        print "here"
+        np_arr = np.fromstring(ros_data.data, np.uint8)
+        image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
+        frame=cv.fromarray(image_np)
+        #sub.unregister()
     
 def callback(data):
     print "data: " + data.data
@@ -49,8 +52,13 @@ def callback(data):
     b=string.split(',')
     height=str(b[2])
     width=str(b[3])
+    prev_cam=cam
     cam=str(b[0])
+    
     fps=str(b[1])
+    if prev_cam==str(2):
+        #pass
+        sub.unregister()
     if cam==str(0):
         capture=None
         capture1=None
@@ -157,6 +165,7 @@ def talker():
         #a=image.shape
         #print a
         #rospy.loginfo(st)
+        print type(frame)
         pub.publish(bridge.cv_to_imgmsg(frame, "bgr8"))
         time1=time.time()
         #print "after frame publish: "+str(time1)

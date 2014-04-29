@@ -39,9 +39,13 @@ def ptz():
         pan1=float(raw_input("Enter pan:"))
         tilt1=float(raw_input("Enter tilt:"))
         zoom1=float(raw_input("Enter zoom:"))
+        brightness1=float(raw_input("Enter brightness:"))
+        #auto=True
         Message.pan=pan1
         Message.tilt=tilt1
         Message.zoom=zoom1
+        Message.brightness=brightness1
+        #Message.autofocus=auto
         pub.publish(Message)
         r.sleep()
 
