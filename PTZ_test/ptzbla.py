@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import roslib
-roslib.load_manifest('cam_test')
+roslib.load_manifest('usb_cam_test')
 import sys
 import rospy
 import cv
@@ -16,7 +16,7 @@ import time
 height=str(640)
 width=str(480)
 fps=str(30)
-cam="5"
+cam="0"
 capture=cv.CaptureFromCAM(0)
 capture1=None
 sub=None
@@ -55,30 +55,32 @@ def callback(data):
         capture=None
         capture1=None
         capture=cv.CaptureFromCAM(0)
-        sub.unregister()
+        #sub.unregister()
     if cam==str(1):
         capture=None
         capture1=None
         capture=cv.CaptureFromCAM(1)
-        sub.unregister()
-    if cam==str(2):
+        #sub.unregister()
+    '''if cam==str(2):
         capture=None
         capture1=None
         capture=cv.CaptureFromCAM(2)
-        sub.unregister()
+        sub.unregister()'''
     if cam==str(3):
         capture=None
         capture1=None
         capture=cv.CaptureFromCAM(3)
-        sub.unregister()
-    if cam==str(5):
+        #sub.unregister()
+    if cam==str(2):
         capture=None
         capture1=None
         sub=rospy.Subscriber('/image_raw/compressed', CompressedImage,callback1,queue_size=1)
+        check_fps_set=1
+        return
     if cam==str(4):
         capture=None
         capture1=None
-        sub.unregister()
+        #sub.unregister()
         capture=cv.CaptureFromCAM(0)
         capture1=cv.CaptureFromCAM(1)
         check_fps_set=1
@@ -111,21 +113,18 @@ def talker():
     
     rospy.Subscriber("config", String, callback)
     #rospy.Subscriber('/image_raw/compressed', CompressedImage, callback1,queue_size=1)
-    r = rospy.Rate(int(fps)) # 10hz
+    r = rospy.Rate(int(fps))
     time1=0
     frames=0
     start_time=0
     check=0
     cv.QueryFrame(capture)
     frame=cv.QueryFrame(capture)
-    if cam==str(5):
+    if cam==str(2):
         sub=rospy.Subscriber('/image_raw/compressed', CompressedImage,callback1,queue_size=1)
     while not rospy.is_shutdown():
         #str = "hello world %s"%rospy.get_time()
-        if cam!=str(5):
-            cv.QueryFrame(capture)
-            cv.QueryFrame(capture)
-            cv.QueryFrame(capture)
+        if cam!=str(2):
             frame=cv.QueryFrame(capture)
         time1=time.time()
         #print "after frame capture: "+str(time1)
@@ -138,10 +137,6 @@ def talker():
             bitmap = cv.CreateImageHeader((both.shape[1], both.shape[0]), cv.IPL_DEPTH_8U, 3)
             cv.SetData(bitmap, both.tostring(), both.dtype.itemsize * 3 * both.shape[1])
             frame=bitmap
-        if cam==str(5):
-            #print "inside here"
-            #sub=rospy.Subscriber('/image_raw/compressed', CompressedImage,callback1,queue_size=1)
-            print frame
         if check==0:
             check=1
             start_time=time.time()
@@ -155,8 +150,8 @@ def talker():
         if frames%10==0:
             curtime=time.time()
             diff=curtime-start_time
-            fps=frames/diff
-            print fps
+            fps_show=str(frames/diff)
+            print fps_show
         #ret,frame=capture.read()
         #image=np.asarray(frame[:,:])
         #a=image.shape
