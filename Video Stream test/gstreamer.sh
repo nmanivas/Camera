@@ -53,13 +53,13 @@ server_launch() {
 	! tee name=muxtee			\
 	! queue2				\
 	! videorate				\
-	! 'video/x-raw-yuv,framerate=30/1'	\
+	! 'video/x-raw-yuv,framerate=20/1'	\
 	! ffmpegcolorspace			\
 	! jpegenc				\
 	! avimux				\
 	! filesink location=test.avi muxtee.	\
 	! queue					\
-	! xvimagesink sync=false
+	! autovideosink
 }
 
 if [ $# -lt 1 ]; then
