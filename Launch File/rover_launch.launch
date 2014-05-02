@@ -1,0 +1,7 @@
+<launch>
+	<node name="axis_publish" pkg="axis_camera" type="axis.py" />
+	<node name="axis_ptz" pkg="axis_camera" type="axis_ptz.py" />
+	<node name="message_server" pkg="ros_project" type="Server" />
+	<node name="camera_module" pkg="cam_test" type="ptzbla.py" />
+	<node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server" />
+</launch>
