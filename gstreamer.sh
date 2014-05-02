@@ -52,7 +52,8 @@ server_launch() {
 	! jpegdec 				\
 	! tee name=muxtee			\
 	! queue2				\
-	! videorate caps='video/x-raw-yuv,framerate=30/1'	\
+	! videorate				\
+	! 'video/x-raw-yuv,framerate=30/1'	\
 	! ffmpegcolorspace			\
 	! jpegenc				\
 	! avimux				\
