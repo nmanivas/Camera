@@ -1,6 +1,10 @@
-*.*~
 *.pyc
 .*
 
-!.gitignore
+*.svg
+*.png
+*.pdf
+*.jpg
+*.jpeg
 
+!.gitignore
