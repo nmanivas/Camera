@@ -6,21 +6,20 @@ Created on May 6, 2014
 
 import socket
 import struct
-import time
+import math
 
-server="127.0.0.1"
-port=30000
+header_size = 20
 
+frame_id = 0
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-header_size = 16
-buffer_size = 64000 - 16
-message = "Hello World"
-for frame_id in range(0, 100):
-    for seq_id in range(0, 4):
-        data = message + "-" + str(frame_id) + "(" + str(seq_id) + ")"
-        header = struct.pack("!QQ" + str(buffer_size) + "s", frame_id, seq_id, data)
-        sock.sendto(header, (server, port))
-        time.sleep(0.02)
+def send(data, server_ip, port):
+    global frame_id
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    buffer_size = 64000 - header_size
+    num_chunks  = math.ceil(len(data) / buffer_size)
+    for chunk_id in range(0, num_chunks):
+        header = struct.pack("!IQQ" + str(buffer_size) + "s", len(data), frame_id, chunk_id, data)
+        sock.sendto(header, (server_ip, port))
+    frame_id += 1
         
