@@ -1,0 +1,9 @@
+Reference:
+https://github.com/umlaeute/v4l2loopback
+http://askubuntu.com/questions/139239/fake-a-webcam-using-a-video-loopback-device
+
+Create a loopback device:
+sudo modprobe v4l2loopback
+
+write to the loopback device:
+gst-launch-0.10 filesrc location=/home/anas/Downloads/Michael_Clayton.mp4 ! decodebin ! v4l2sink device=/dev/video1
