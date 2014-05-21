@@ -1,3 +1,11 @@
+READ ME FILE:
+
+
+This project uses Robot Operating System(ROS) and Open CV to control a PTZ camera and multiple USB cameras.
+Blob detection capablity has not been built into it yet. but you can find a test  code in the corresponding test directory.
+It was part of the NASA RASC-AL rover building contest. If anyone has any issues please do mail me at :nmanivas@buffalo.edu
+
+
 Installation on 64-bit Ubuntu 13.04 machine:
 
 ROS Installation:
